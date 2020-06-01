@@ -1,2 +1,3 @@
-# fpga_vga
-FPGA VGA signal generator.
+# FPGA VGA Signal Generator
+
+Coming soon!
