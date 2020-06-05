@@ -58,27 +58,38 @@ module top (
       .BYPASS(0)
     );
 
+    reg [2:0] memory_array [0:30000];
+
+    // Zero out display.
+    initial begin
+      $readmemb("memory_array.mem", memory_array);
+    end
+
     // <= : every line executed in parallel in always block
     always @(posedge clk_10mhz) begin
-        red <= 0;
-        green <= 1;
-        blue <= 0;
+        // memory_array[0] <= 3'b001;
+        // memory_array[1] <= 3'b010;
+        // memory_array[200] <= 3'b010;
+        // memory_array[201] <= 3'b001;
+        // memory_array[400] <= 3'b001;
 
-        // Horizontal blanking.
-        if (h_counter > 199)
+        // Display pixel.
+        if (h_counter > 199)  // Horizontal blanking.
       	begin
       	  red <= 0;
           green <= 0;
           blue <= 0;
-      	end
-
-        // Vertical blanking.
-        if (v_counter > 599)
+      	end else if (v_counter > 599)  // Vertical blanking.
       	begin
       	  red <= 0;
           green <= 0;
           blue <= 0;
-      	end
+      	end else // Active video.
+        begin
+          red <= memory_array[h_counter + ((v_counter / 4) * 200)][0];
+          green <= memory_array[h_counter + ((v_counter / 4) * 200)][1];
+          blue <= memory_array[h_counter + ((v_counter / 4) * 200)][2];
+        end
 
         // Horitonal sync.
         if (h_counter > 209 && h_counter < 242)
