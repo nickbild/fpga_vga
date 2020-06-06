@@ -5,14 +5,14 @@ module top (
     // USB pull-up resistor
     output USBPU,
 
-    // R1, G1, B1
-    output PIN_1,
-    output PIN_2,
-    output PIN_3,
-    output PIN_4,
-    output PIN_5,
+    output PIN_8,
+    output PIN_9,
+    output PIN_10,
+    // output PIN_11,  Pin looks to be dead.
+    output PIN_12,
+    output PIN_13,
 
-    input PIN_14
+    input PIN_31
 
 );
 
@@ -21,15 +21,15 @@ module top (
 
     // Outputs.
     wire clk_10mhz;
-    assign PIN_1 = red;
-    assign PIN_2 = green;
-    assign PIN_3 = blue;
-    assign PIN_4 = h_sync;
-    assign PIN_5 = v_sync;
+    assign PIN_8 = red;
+    assign PIN_9 = green;
+    assign PIN_10 = blue;
+    assign PIN_12 = h_sync;
+    assign PIN_13 = v_sync;
 
     // Inputs.
     wire interrupt;
-    assign PIN_14 = interrupt;
+    assign PIN_31 = interrupt;
 
     reg [8:0] h_counter;
     reg [0:0] h_sync;
