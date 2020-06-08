@@ -93,7 +93,7 @@ module top (
     assign a13 = PIN_20;
     assign a14 = PIN_21;
 
-    reg [2:0] memory_array [0:30000];
+    // reg [2:0] memory_array [0:30000];
     reg [14:0] address;
 
     // RGB data inputs.
@@ -131,9 +131,30 @@ module top (
       .BYPASS(0)
     );
 
+
+
+
+    reg [3:0] memory_data_in;
+    reg [9:0] addr;
+    reg write_en;
+    reg mem_clk;
+
+    wire [3:0] memory_data_out_1;
+
+    ram1024 ram1 (
+      .din(memory_data_in),
+      .addr(addr),
+      .write_en(write_en),
+      .clk(mem_clk),
+      .dout(memory_data_out_1)
+    );
+
+
     // Zero out display.
     initial begin
-      $readmemb("memory_array.mem", memory_array);
+      mem_clk = 0;
+      write_en = 0;
+      addr <= 2;
     end
 
     // <= : every line executed in parallel in always block
@@ -151,9 +172,18 @@ module top (
           blue <= 0;
       	end else // Active video.
         begin
-          red <= memory_array[h_counter + ((v_counter / 4) * 200)][0];
-          green <= memory_array[h_counter + ((v_counter / 4) * 200)][1];
-          blue <= memory_array[h_counter + ((v_counter / 4) * 200)][2];
+
+          addr <= 1;
+          mem_clk = 1;
+          mem_clk = 0;
+
+          red <= memory_data_out_1[0];
+          green <= memory_data_out_1[1];
+          blue <= memory_data_out_1[2];
+
+          // red <= memory_array[h_counter + ((v_counter / 4) * 200)][0];
+          // green <= memory_array[h_counter + ((v_counter / 4) * 200)][1];
+          // blue <= memory_array[h_counter + ((v_counter / 4) * 200)][2];
         end
 
         // Horitonal sync.
@@ -193,12 +223,12 @@ module top (
     always @(posedge interrupt) begin
       // Convoluted method of concatenating GPIO pin bits to get an address -- keeps place and route
       // working without using too many LUs for the TinyFPGA.
-      address = (a14 * 2**14) + (a13 * 2**13) + (a12 * 2**12) + (a11 * 2**11) + (a10 * 2**10) + (a9 * 2**9) + (a8 * 2**8);
-      address = address + (a7 * 2**7) + (a6 * 2**6) + (a5 * 2**5) + (a4 * 2**4) + (a3 * 2**3) + (a2 * 2**2) + (a1 * 2**1) + (a0 * 2**0);
-
-      rgb_in = (b_in * 2**2) + (g_in * 2**1) + (r_in * 2**0);
-
-      memory_array[address] <= rgb_in;
+      // address = (a14 * 2**14) + (a13 * 2**13) + (a12 * 2**12) + (a11 * 2**11) + (a10 * 2**10) + (a9 * 2**9) + (a8 * 2**8);
+      // address = address + (a7 * 2**7) + (a6 * 2**6) + (a5 * 2**5) + (a4 * 2**4) + (a3 * 2**3) + (a2 * 2**2) + (a1 * 2**1) + (a0 * 2**0);
+      //
+      // rgb_in = (b_in * 2**2) + (g_in * 2**1) + (r_in * 2**0);
+      //
+      // memory_array[address] <= rgb_in;
     end
 
 endmodule
