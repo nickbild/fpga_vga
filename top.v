@@ -139,13 +139,14 @@ module top (
     reg write_en;
     reg mem_clk;
 
+
     wire [3:0] memory_data_out_1;
 
     ram1024 ram1 (
       .din(memory_data_in),
       .addr(addr),
       .write_en(write_en),
-      .clk(mem_clk),
+      .mem_clk(mem_clk),
       .dout(memory_data_out_1)
     );
 
@@ -153,8 +154,23 @@ module top (
     // Zero out display.
     initial begin
       mem_clk = 0;
-      write_en = 0;
-      addr <= 2;
+      write_en = 1;
+
+      memory_data_in = 1;
+      addr = 1;
+
+      // memory_data_in = memory_data_in + 1;
+      // if (memory_data_in >= 4) begin
+      //   memory_data_in = 0;
+      // end
+      // mem_clk = 1;
+      // mem_clk = 0;
+
+        // write_en = 0;
+        // write_en = 1;
+        // mem_clk = 1;
+        // mem_clk = 0;
+
     end
 
     // <= : every line executed in parallel in always block
@@ -173,13 +189,26 @@ module top (
       	end else // Active video.
         begin
 
-          addr <= 1;
+          // write_en = 1;
+          //
+          // addr = 1;
+
+          // memory_data_in = 1;
+          // memory_data_in = memory_data_in + 1;
+          // if (memory_data_in >= 4) begin
+          //   memory_data_in = 0;
+          // end
+
+          // memory_data_in = 1; // unprocessed init attribute
+
           mem_clk = 1;
           mem_clk = 0;
 
-          red <= memory_data_out_1[0];
-          green <= memory_data_out_1[1];
-          blue <= memory_data_out_1[2];
+
+
+          red = memory_data_out_1[0];
+          green = memory_data_out_1[1];
+          blue = memory_data_out_1[2];
 
           // red <= memory_array[h_counter + ((v_counter / 4) * 200)][0];
           // green <= memory_array[h_counter + ((v_counter / 4) * 200)][1];
