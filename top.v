@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module top (
     // 16MHz clock
     input CLK,
@@ -93,9 +95,6 @@ module top (
     assign a13 = PIN_20;
     assign a14 = PIN_21;
 
-    // reg [2:0] memory_array [0:30000];
-    reg [14:0] address;
-
     // RGB data inputs.
     wire r_in;
     wire g_in;
@@ -105,7 +104,12 @@ module top (
     assign g_in = PIN_23;
     assign b_in = PIN_24;
 
-    reg [2:0] rgb_in;
+    // BRAM
+    reg [15:0] memory_data_in;  // bits: 13, 9, 5, 1
+    reg [10:0] waddr;
+    reg [10:0] raddr;
+    reg write_en;
+    wire [15:0] memory_data_out_1;
 
     // Create a 10MHz clock.
     // http://martin.hinner.info/vga/timing.html
@@ -127,93 +131,35 @@ module top (
     ) pll (
       .REFERENCECLK(CLK),
       .PLLOUTCORE(clk_10mhz),
-      .RESETB(1),
-      .BYPASS(0)
+      .RESETB(1'b1),
+      .BYPASS(1'b0)
     );
 
-
-
-
-    reg [3:0] memory_data_in;
-    reg [9:0] addr;
-    reg write_en;
-    reg mem_clk;
-
-
-    wire [3:0] memory_data_out_1;
-
-    ram1024 ram1 (
-      .din(memory_data_in),
-      .addr(addr),
-      .write_en(write_en),
-      .mem_clk(mem_clk),
-      .dout(memory_data_out_1)
+    // BRAM
+    SB_RAM40_4K #(
+      .READ_MODE(2),    // 1024x4
+      .WRITE_MODE(2),   // 1024x4
+      .INIT_0(256'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111)
+    ) ram1 (
+      .RDATA(memory_data_out_1),
+      .RADDR(raddr),
+      .WADDR(waddr),
+      .WDATA(memory_data_in),
+      .RCLKE(1'b1),
+      .RCLK(clk_10mhz),
+      .RE(1'b1),
+      .WCLKE(1'b1),
+      .WCLK(clk_10mhz),
+      .WE(write_en)
     );
 
-
-    // Zero out display.
     initial begin
-      mem_clk = 0;
-      write_en = 1;
-
-      memory_data_in = 1;
-      addr = 1;
-
-      // memory_data_in = memory_data_in + 1;
-      // if (memory_data_in >= 4) begin
-      //   memory_data_in = 0;
-      // end
-      // mem_clk = 1;
-      // mem_clk = 0;
-
-        // write_en = 0;
-        // write_en = 1;
-        // mem_clk = 1;
-        // mem_clk = 0;
-
+      write_en <= 0;
     end
 
     // <= : every line executed in parallel in always block
     always @(posedge clk_10mhz) begin
-        // Display pixel.
-        if (h_counter > 199)  // Horizontal blanking.
-      	begin
-      	  red <= 0;
-          green <= 0;
-          blue <= 0;
-      	end else if (v_counter > 599)  // Vertical blanking.
-      	begin
-      	  red <= 0;
-          green <= 0;
-          blue <= 0;
-      	end else // Active video.
-        begin
-
-          // write_en = 1;
-          //
-          // addr = 1;
-
-          // memory_data_in = 1;
-          // memory_data_in = memory_data_in + 1;
-          // if (memory_data_in >= 4) begin
-          //   memory_data_in = 0;
-          // end
-
-          // memory_data_in = 1; // unprocessed init attribute
-
-          mem_clk = 1;
-          mem_clk = 0;
-
-
-
-          red = memory_data_out_1[0];
-          green = memory_data_out_1[1];
-          blue = memory_data_out_1[2];
-
-          // red <= memory_array[h_counter + ((v_counter / 4) * 200)][0];
-          // green <= memory_array[h_counter + ((v_counter / 4) * 200)][1];
-          // blue <= memory_array[h_counter + ((v_counter / 4) * 200)][2];
-        end
+        raddr = h_counter + ((v_counter / 4) * 200);
 
         // Horitonal sync.
         if (h_counter > 209 && h_counter < 242)
@@ -233,6 +179,24 @@ module top (
           v_sync <= 0;
         end
 
+        // Display pixel.
+        if (h_counter > 199)  // Horizontal blanking.
+      	begin
+      	  red <= 0;
+          green <= 0;
+          blue <= 0;
+      	end else if (v_counter > 599)  // Vertical blanking.
+      	begin
+      	  red <= 0;
+          green <= 0;
+          blue <= 0;
+      	end else // Active video.
+        begin
+          red <= memory_data_out_1[1];
+          green <= memory_data_out_1[5];
+          blue <= memory_data_out_1[9];
+        end
+
         // Increment / reset counters.
         h_counter <= h_counter + 1'b1;
 
@@ -250,14 +214,11 @@ module top (
 
     // Load pixel data into memory.
     always @(posedge interrupt) begin
-      // Convoluted method of concatenating GPIO pin bits to get an address -- keeps place and route
-      // working without using too many LUs for the TinyFPGA.
-      // address = (a14 * 2**14) + (a13 * 2**13) + (a12 * 2**12) + (a11 * 2**11) + (a10 * 2**10) + (a9 * 2**9) + (a8 * 2**8);
-      // address = address + (a7 * 2**7) + (a6 * 2**6) + (a5 * 2**5) + (a4 * 2**4) + (a3 * 2**3) + (a2 * 2**2) + (a1 * 2**1) + (a0 * 2**0);
-      //
-      // rgb_in = (b_in * 2**2) + (g_in * 2**1) + (r_in * 2**0);
-      //
-      // memory_array[address] <= rgb_in;
+      waddr <= (a14 * 2**14) + (a13 * 2**13) + (a12 * 2**12) + (a11 * 2**11) + (a10 * 2**10) + (a9 * 2**9) + (a8 * 2**8) + (a7 * 2**7) + (a6 * 2**6) + (a5 * 2**5) + (a4 * 2**4) + (a3 * 2**3) + (a2 * 2**2) + (a1 * 2**1) + (a0 * 2**0);
+      memory_data_in <= (b_in * 2**2) + (g_in * 2**1) + (r_in * 2**0);
+
+      write_en = 1;
+      write_en = 0;
     end
 
 endmodule
