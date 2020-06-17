@@ -202,46 +202,19 @@ module top (
     initial begin
       h_counter <= 0;
       v_counter <= 0;
+
       h_sync <= 0;
       v_sync <= 0;
+      red <= 0;
+      green <= 0;
+      blue <= 0;
 
-      // write_en1 <= 0;
-      write_en2 <= 0;
-      write_en3 <= 0;
-      write_en4 <= 0;
-      write_en5 <= 0;
-      write_en6 <= 0;
-      write_en7 <= 0;
-      write_en8 <= 0;
-      write_en9 <= 0;
-      write_en10 <= 0;
-      write_en11 <= 0;
-      write_en12 <= 0;
-      write_en13 <= 0;
-      write_en14 <= 0;
-      write_en15 <= 0;
-      write_en16 <= 0;
-      write_en17 <= 0;
-      write_en18 <= 0;
-      write_en19 <= 0;
-      write_en20 <= 0;
-      write_en21 <= 0;
-      write_en22 <= 0;
-      write_en23 <= 0;
-      write_en24 <= 0;
-      write_en25 <= 0;
-      write_en26 <= 0;
-      write_en27 <= 0;
-      write_en28 <= 0;
-      write_en29 <= 0;
-      // write_en30 <= 0;
-
-      // TODO
-      memory_data_in = 16'b0000000000000000;
-      // 1,197 ; 30,301
-      waddr = 197;
-      write_en1 = 1;
-      write_en30 = 0;
+      // // TODO
+      // memory_data_in = 16'b0000000000000000;
+      // // 1,197 ; 30,301
+      // waddr = 197;
+      // write_en1 = 1;
+      // write_en30 = 0;
     end
 
     always @(posedge clk_10mhz) begin
@@ -411,104 +384,104 @@ module top (
     end
 
     // Load pixel data into memory.
-    // always @(posedge interrupt) begin
-    //   w_absolute_addr <= (a14 * 2**14) + (a13 * 2**13) + (a12 * 2**12) + (a11 * 2**11) + (a10 * 2**10) + (a9 * 2**9) + (a8 * 2**8) + (a7 * 2**7) + (a6 * 2**6) + (a5 * 2**5) + (a4 * 2**4) + (a3 * 2**3) + (a2 * 2**2) + (a1 * 2**1) + (a0 * 2**0);
-    //   waddr = w_absolute_addr[9:0];
-    //   memory_data_in <= (b_in * 2**2) + (g_in * 2**1) + (r_in * 2**0);
+    always @(interrupt) begin
+      write_en1 <= 0;
+      write_en2 <= 0;
+      write_en3 <= 0;
+      write_en4 <= 0;
+      write_en5 <= 0;
+      write_en6 <= 0;
+      write_en7 <= 0;
+      write_en8 <= 0;
+      write_en9 <= 0;
+      write_en10 <= 0;
+      write_en11 <= 0;
+      write_en12 <= 0;
+      write_en13 <= 0;
+      write_en14 <= 0;
+      write_en15 <= 0;
+      write_en16 <= 0;
+      write_en17 <= 0;
+      write_en18 <= 0;
+      write_en19 <= 0;
+      write_en20 <= 0;
+      write_en21 <= 0;
+      write_en22 <= 0;
+      write_en23 <= 0;
+      write_en24 <= 0;
+      write_en25 <= 0;
+      write_en26 <= 0;
+      write_en27 <= 0;
+      write_en28 <= 0;
+      write_en29 <= 0;
+      write_en30 <= 0;
 
-      // TODO
-      // if (w_absolute_addr > 29695) begin
-      //   write_en30 = 1;
-      //   write_en30 = 0;
-      // end else if (w_absolute_addr > 28671) begin
-      //   write_en29 = 1;
-      //   write_en29 = 0;
-      // end else if (w_absolute_addr > 27647) begin
-      //   write_en28 = 1;
-      //   write_en28 = 0;
-      // end else if (w_absolute_addr > 26623) begin
-      //   write_en27 = 1;
-      //   write_en27 = 0;
-      // end else if (w_absolute_addr > 25599) begin
-      //   write_en26 = 1;
-      //   write_en26 = 0;
-      // end else if (w_absolute_addr > 24575) begin
-      //   write_en25 = 1;
-      //   write_en25 = 0;
-      // end else if (w_absolute_addr > 23551) begin
-      //   write_en24 = 1;
-      //   write_en24 = 0;
-      // end else if (w_absolute_addr > 22527) begin
-      //   write_en23 = 1;
-      //   write_en23 = 0;
-      // end else if (w_absolute_addr > 21503) begin
-      //   write_en22 = 1;
-      //   write_en22 = 0;
-      // end else if (w_absolute_addr > 20479) begin
-      //   write_en21 = 1;
-      //   write_en21 = 0;
-      // end else if (w_absolute_addr > 19455) begin
-      //   write_en20 = 1;
-      //   write_en20 = 0;
-      // end else if (w_absolute_addr > 18431) begin
-      //   write_en19 = 1;
-      //   write_en19 = 0;
-      // end else if (w_absolute_addr > 17407) begin
-      //   write_en18 = 1;
-      //   write_en18 = 0;
-      // end else if (w_absolute_addr > 16383) begin
-      //   write_en17 = 1;
-      //   write_en17 = 0;
-      // end else if (w_absolute_addr > 15359) begin
-      //   write_en16 = 1;
-      //   write_en16 = 0;
-      // end else if (w_absolute_addr > 14335) begin
-      //   write_en15 = 1;
-      //   write_en15 = 0;
-      // end else if (w_absolute_addr > 13311) begin
-      //   write_en14 = 1;
-      //   write_en14 = 0;
-      // end else if (w_absolute_addr > 12287) begin
-      //   write_en13 = 1;
-      //   write_en13 = 0;
-      // end else if (w_absolute_addr > 11263) begin
-      //   write_en12 = 1;
-      //   write_en12 = 0;
-      // end else if (w_absolute_addr > 10239) begin
-      //   write_en11 = 1;
-      //   write_en11 = 0;
-      // end else if (w_absolute_addr > 9215) begin
-      //   write_en10 = 1;
-      //   write_en10 = 0;
-      // end else if (w_absolute_addr > 8191) begin
-      //   write_en9 = 1;
-      //   write_en9 = 0;
-      // end else if (w_absolute_addr > 7167) begin
-      //   write_en8 = 1;
-      //   write_en8 = 0;
-      // end else if (w_absolute_addr > 6143) begin
-      //   write_en7 = 1;
-      //   write_en7 = 0;
-      // end else if (w_absolute_addr > 5119) begin
-      //   write_en6 = 1;
-      //   write_en6 = 0;
-      // end else if (w_absolute_addr > 4095) begin
-      //   write_en5 = 1;
-      //   write_en5 = 0;
-      // end else if (w_absolute_addr > 3071) begin
-      //   write_en4 = 1;
-      //   write_en4 = 0;
-      // end else if (w_absolute_addr > 2046) begin
-      //   write_en3 = 1;
-      //   write_en3 = 0;
-      // end else if (w_absolute_addr > 1023) begin
-      //   write_en2 = 1;
-      //   write_en2 = 0;
-      // end else begin
-      //   write_en1 = 1;
-      //   write_en1 = 0;
-      // end
-    // end
+      w_absolute_addr <= {a14, a13, a12, a11, a10, a9, a8, a7, a6, a5, a4, a3, a2, a1, a0};
+      waddr = {1'b0, w_absolute_addr[9:0]};
+      memory_data_in <= {b_in, g_in, r_in};
+
+      if (w_absolute_addr > 29695) begin
+        write_en30 <= 1;
+      end else if (w_absolute_addr > 28671) begin
+        write_en29 <= 1;
+      end else if (w_absolute_addr > 27647) begin
+        write_en28 <= 1;
+      end else if (w_absolute_addr > 26623) begin
+        write_en27 <= 1;
+      end else if (w_absolute_addr > 25599) begin
+        write_en26 <= 1;
+      end else if (w_absolute_addr > 24575) begin
+        write_en25 <= 1;
+      end else if (w_absolute_addr > 23551) begin
+        write_en24 <= 1;
+      end else if (w_absolute_addr > 22527) begin
+        write_en23 <= 1;
+      end else if (w_absolute_addr > 21503) begin
+        write_en22 <= 1;
+      end else if (w_absolute_addr > 20479) begin
+        write_en21 <= 1;
+      end else if (w_absolute_addr > 19455) begin
+        write_en20 <= 1;
+      end else if (w_absolute_addr > 18431) begin
+        write_en19 <= 1;
+      end else if (w_absolute_addr > 17407) begin
+        write_en18 <= 1;
+      end else if (w_absolute_addr > 16383) begin
+        write_en17 <= 1;
+      end else if (w_absolute_addr > 15359) begin
+        write_en16 <= 1;
+      end else if (w_absolute_addr > 14335) begin
+        write_en15 <= 1;
+      end else if (w_absolute_addr > 13311) begin
+        write_en14 <= 1;
+      end else if (w_absolute_addr > 12287) begin
+        write_en13 <= 1;
+      end else if (w_absolute_addr > 11263) begin
+        write_en12 <= 1;
+      end else if (w_absolute_addr > 10239) begin
+        write_en11 <= 1;
+      end else if (w_absolute_addr > 9215) begin
+        write_en10 <= 1;
+      end else if (w_absolute_addr > 8191) begin
+        write_en9 <= 1;
+      end else if (w_absolute_addr > 7167) begin
+        write_en8 <= 1;
+      end else if (w_absolute_addr > 6143) begin
+        write_en7 <= 1;
+      end else if (w_absolute_addr > 5119) begin
+        write_en6 <= 1;
+      end else if (w_absolute_addr > 4095) begin
+        write_en5 <= 1;
+      end else if (w_absolute_addr > 3071) begin
+        write_en4 <= 1;
+      end else if (w_absolute_addr > 2046) begin
+        write_en3 <= 1;
+      end else if (w_absolute_addr > 1023) begin
+        write_en2 <= 1;
+      end else begin
+        write_en1 <= 1;
+      end
+    end
 
     ////
     // BRAM
