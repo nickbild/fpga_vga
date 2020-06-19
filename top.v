@@ -107,8 +107,7 @@ module top (
     // BRAM
     reg [15:0] memory_data_in;  // bits: 13, 9, 5, 1
     reg [14:0] w_absolute_addr;
-    wire [10:0] waddr;
-    assign waddr = {1'b0, w_absolute_addr[9:0]};
+    reg [10:0] waddr;
 
     reg [14:0] absolute_addr;
     wire [10:0] raddr;
@@ -352,7 +351,7 @@ module top (
           red <= memory_data_out_4[1];
           green <= memory_data_out_4[5];
           blue <= memory_data_out_4[9];
-        end else if (absolute_addr > 2046) begin
+        end else if (absolute_addr > 2047) begin
           red <= memory_data_out_3[1];
           green <= memory_data_out_3[5];
           blue <= memory_data_out_3[9];
@@ -418,15 +417,17 @@ module top (
       write_en28 <= 0;
       write_en29 <= 0;
       write_en30 <= 0;
+
       if (interrupt && !interrupt_active) begin
         interrupt_active = 1;
 
         memory_data_in = {1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,b_in,1'b1,1'b1,1'b1,g_in,1'b1,1'b1,1'b1,r_in,1'b1};
         w_absolute_addr = {a14, a13, a12, a11, a10, a9, a8, a7, a6, a5, a4, a3, a2, a1, a0};
+        waddr = {1'b0, w_absolute_addr[9:0]};
 
         if (w_absolute_addr > 29695) begin
           write_en30 <= 1;
-        end else if (w_absolute_addr > 28671) begin
+        end else if (w_absolute_addr > 28671) begin // 29695 bad
           write_en29 <= 1;
         end else if (w_absolute_addr > 27647) begin
           write_en28 <= 1;
@@ -478,7 +479,7 @@ module top (
           write_en5 <= 1;
         end else if (w_absolute_addr > 3071) begin
           write_en4 <= 1;
-        end else if (w_absolute_addr > 2046) begin
+        end else if (w_absolute_addr > 2047) begin
           write_en3 <= 1;
         end else if (w_absolute_addr > 1023) begin
           write_en2 <= 1;
