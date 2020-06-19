@@ -181,7 +181,7 @@ module top (
     // 10 MHz = 200x150
     SB_PLL40_CORE #(
       .DIVR(0),
-      .DIVF(9),
+      .DIVF(19),
       .DIVQ(4),
       .FILTER_RANGE(3'b001),
       .FEEDBACK_PATH("SIMPLE"),
@@ -217,10 +217,14 @@ module top (
       // write_en30 = 0;
     end
 
+    reg display;
+
     always @(posedge clk_10mhz) begin
+      if (display) begin
       // Horitonal sync.
       // if (h_counter > 209 && h_counter < 242)
-      if (h_counter > 211 && h_counter < 244)
+      // if (h_counter > 211 && h_counter < 244)
+      if (h_counter > 210 && h_counter < 243)
       begin
         h_sync <= 1;
       end else begin
@@ -380,13 +384,20 @@ module top (
         v_counter <= 0;
       end
 
-      absolute_addr <= h_counter + ((v_counter / 4) * 200);
+      display <= 0;
+
+      end else begin
+        display <= 1;
+      end
+
+      // absolute_addr <= h_counter + ((v_counter / 4) * 200);
     end
 
     reg interrupt_active;
 
     // Load pixel data into memory.
     always @(negedge clk_10mhz) begin
+      absolute_addr <= h_counter + ((v_counter / 4) * 200);
       write_en1 <= 0;
       write_en2 <= 0;
       write_en3 <= 0;
