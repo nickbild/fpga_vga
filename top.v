@@ -41,7 +41,7 @@ module top (
     assign USBPU = 0;
 
     // VGA output signals.
-    wire clk_10mhz;
+    wire clk_20mhz;
     assign PIN_8 = red;
     assign PIN_9 = green;
     assign PIN_10 = blue;
@@ -112,6 +112,7 @@ module top (
     reg [14:0] absolute_addr;
     wire [10:0] raddr;
     assign raddr = {1'b0, absolute_addr[9:0]};
+    reg display;
 
     reg write_en1;
     reg write_en2;
@@ -194,7 +195,7 @@ module top (
       .ENABLE_ICEGATE(1'b0)
     ) pll (
       .REFERENCECLK(CLK),
-      .PLLOUTCORE(clk_10mhz),
+      .PLLOUTCORE(clk_20mhz),
       .RESETB(1'b1),
       .BYPASS(1'b0)
     );
@@ -208,196 +209,183 @@ module top (
       red <= 0;
       green <= 0;
       blue <= 0;
-
-      // // TODO
-      // memory_data_in = 16'b0000000000000000;
-      // // 1,197 ; 30,301
-      // waddr = 197;
-      // write_en1 = 1;
-      // write_en30 = 0;
     end
 
-    reg display;
-
-    always @(posedge clk_10mhz) begin
-      if (display) begin
-      // Horitonal sync.
-      // if (h_counter > 209 && h_counter < 242)
-      // if (h_counter > 211 && h_counter < 244)
-      if (h_counter > 210 && h_counter < 243)
-      begin
-        h_sync <= 1;
-      end else begin
-        h_sync <= 0;
-      end
-
-      // Vertical sync.
-      if (v_counter > 600 && v_counter < 605)
-      begin
-        v_sync <= 1;
-      end else begin
-        v_sync <= 0;
-      end
-
-      // Display pixel.
-      if (h_counter > 199 || v_counter > 599)  // Horizontal/vertical blanking.
-    	begin
-    	  red <= 0;
-        green <= 0;
-        blue <= 0;
-    	end else // Active video.
-      begin
-        if (absolute_addr > 29695) begin
-          red <= memory_data_out_30[1];
-          green <= memory_data_out_30[5];
-          blue <= memory_data_out_30[9];
-        end else if (absolute_addr > 28671) begin
-          red <= memory_data_out_29[1];
-          green <= memory_data_out_29[5];
-          blue <= memory_data_out_29[9];
-        end else if (absolute_addr > 27647) begin
-          red <= memory_data_out_28[1];
-          green <= memory_data_out_28[5];
-          blue <= memory_data_out_28[9];
-        end else if (absolute_addr > 26623) begin
-          red <= memory_data_out_27[1];
-          green <= memory_data_out_27[5];
-          blue <= memory_data_out_27[9];
-        end else if (absolute_addr > 25599) begin
-          red <= memory_data_out_26[1];
-          green <= memory_data_out_26[5];
-          blue <= memory_data_out_26[9];
-        end else if (absolute_addr > 24575) begin
-          red <= memory_data_out_25[1];
-          green <= memory_data_out_25[5];
-          blue <= memory_data_out_25[9];
-        end else if (absolute_addr > 23551) begin
-          red <= memory_data_out_24[1];
-          green <= memory_data_out_24[5];
-          blue <= memory_data_out_24[9];
-        end else if (absolute_addr > 22527) begin
-          red <= memory_data_out_23[1];
-          green <= memory_data_out_23[5];
-          blue <= memory_data_out_23[9];
-        end else if (absolute_addr > 21503) begin
-          red <= memory_data_out_22[1];
-          green <= memory_data_out_22[5];
-          blue <= memory_data_out_22[9];
-        end else if (absolute_addr > 20479) begin
-          red <= memory_data_out_21[1];
-          green <= memory_data_out_21[5];
-          blue <= memory_data_out_21[9];
-        end else if (absolute_addr > 19455) begin
-          red <= memory_data_out_20[1];
-          green <= memory_data_out_20[5];
-          blue <= memory_data_out_20[9];
-        end else if (absolute_addr > 18431) begin
-          red <= memory_data_out_19[1];
-          green <= memory_data_out_19[5];
-          blue <= memory_data_out_19[9];
-        end else if (absolute_addr > 17407) begin
-          red <= memory_data_out_18[1];
-          green <= memory_data_out_18[5];
-          blue <= memory_data_out_18[9];
-        end else if (absolute_addr > 16383) begin
-          red <= memory_data_out_17[1];
-          green <= memory_data_out_17[5];
-          blue <= memory_data_out_17[9];
-        end else if (absolute_addr > 15359) begin
-          red <= memory_data_out_16[1];
-          green <= memory_data_out_16[5];
-          blue <= memory_data_out_16[9];
-        end else if (absolute_addr > 14335) begin
-          red <= memory_data_out_15[1];
-          green <= memory_data_out_15[5];
-          blue <= memory_data_out_15[9];
-        end else if (absolute_addr > 13311) begin
-          red <= memory_data_out_14[1];
-          green <= memory_data_out_14[5];
-          blue <= memory_data_out_14[9];
-        end else if (absolute_addr > 12287) begin
-          red <= memory_data_out_13[1];
-          green <= memory_data_out_13[5];
-          blue <= memory_data_out_13[9];
-        end else if (absolute_addr > 11263) begin
-          red <= memory_data_out_12[1];
-          green <= memory_data_out_12[5];
-          blue <= memory_data_out_12[9];
-        end else if (absolute_addr > 10239) begin
-          red <= memory_data_out_11[1];
-          green <= memory_data_out_11[5];
-          blue <= memory_data_out_11[9];
-        end else if (absolute_addr > 9215) begin
-          red <= memory_data_out_10[1];
-          green <= memory_data_out_10[5];
-          blue <= memory_data_out_10[9];
-        end else if (absolute_addr > 8191) begin
-          red <= memory_data_out_9[1];
-          green <= memory_data_out_9[5];
-          blue <= memory_data_out_9[9];
-        end else if (absolute_addr > 7167) begin
-          red <= memory_data_out_8[1];
-          green <= memory_data_out_8[5];
-          blue <= memory_data_out_8[9];
-        end else if (absolute_addr > 6143) begin
-          red <= memory_data_out_7[1];
-          green <= memory_data_out_7[5];
-          blue <= memory_data_out_7[9];
-        end else if (absolute_addr > 5119) begin
-          red <= memory_data_out_6[1];
-          green <= memory_data_out_6[5];
-          blue <= memory_data_out_6[9];
-        end else if (absolute_addr > 4095) begin
-          red <= memory_data_out_5[1];
-          green <= memory_data_out_5[5];
-          blue <= memory_data_out_5[9];
-        end else if (absolute_addr > 3071) begin
-          red <= memory_data_out_4[1];
-          green <= memory_data_out_4[5];
-          blue <= memory_data_out_4[9];
-        end else if (absolute_addr > 2047) begin
-          red <= memory_data_out_3[1];
-          green <= memory_data_out_3[5];
-          blue <= memory_data_out_3[9];
-        end else if (absolute_addr > 1023) begin
-          red <= memory_data_out_2[1];
-          green <= memory_data_out_2[5];
-          blue <= memory_data_out_2[9];
+    always @(posedge clk_20mhz) begin
+      if (display) begin  // Slow down clock for display.
+        // Horitonal sync.
+        if (h_counter > 210 && h_counter < 242)
+        begin
+          h_sync <= 1;
         end else begin
-          red <= memory_data_out_1[1];
-          green <= memory_data_out_1[5];
-          blue <= memory_data_out_1[9];
+          h_sync <= 0;
         end
-      end
 
-      // Increment / reset counters.
-      h_counter <= h_counter + 1'b1;
+        // Vertical sync.
+        if (v_counter > 600 && v_counter < 605)
+        begin
+          v_sync <= 1;
+        end else begin
+          v_sync <= 0;
+        end
 
-      if (h_counter == 264) // 264
-      begin
-        h_counter <= 0;
-        v_counter <= v_counter + 1'b1;
-      end
+        // Display pixel.
+        if (h_counter > 199 || v_counter > 599)  // Horizontal/vertical blanking.
+      	begin
+      	  red <= 0;
+          green <= 0;
+          blue <= 0;
+      	end else // Active video.
+        begin
+          if (absolute_addr > 29695) begin
+            red <= memory_data_out_30[1];
+            green <= memory_data_out_30[5];
+            blue <= memory_data_out_30[9];
+          end else if (absolute_addr > 28671) begin
+            red <= memory_data_out_29[1];
+            green <= memory_data_out_29[5];
+            blue <= memory_data_out_29[9];
+          end else if (absolute_addr > 27647) begin
+            red <= memory_data_out_28[1];
+            green <= memory_data_out_28[5];
+            blue <= memory_data_out_28[9];
+          end else if (absolute_addr > 26623) begin
+            red <= memory_data_out_27[1];
+            green <= memory_data_out_27[5];
+            blue <= memory_data_out_27[9];
+          end else if (absolute_addr > 25599) begin
+            red <= memory_data_out_26[1];
+            green <= memory_data_out_26[5];
+            blue <= memory_data_out_26[9];
+          end else if (absolute_addr > 24575) begin
+            red <= memory_data_out_25[1];
+            green <= memory_data_out_25[5];
+            blue <= memory_data_out_25[9];
+          end else if (absolute_addr > 23551) begin
+            red <= memory_data_out_24[1];
+            green <= memory_data_out_24[5];
+            blue <= memory_data_out_24[9];
+          end else if (absolute_addr > 22527) begin
+            red <= memory_data_out_23[1];
+            green <= memory_data_out_23[5];
+            blue <= memory_data_out_23[9];
+          end else if (absolute_addr > 21503) begin
+            red <= memory_data_out_22[1];
+            green <= memory_data_out_22[5];
+            blue <= memory_data_out_22[9];
+          end else if (absolute_addr > 20479) begin
+            red <= memory_data_out_21[1];
+            green <= memory_data_out_21[5];
+            blue <= memory_data_out_21[9];
+          end else if (absolute_addr > 19455) begin
+            red <= memory_data_out_20[1];
+            green <= memory_data_out_20[5];
+            blue <= memory_data_out_20[9];
+          end else if (absolute_addr > 18431) begin
+            red <= memory_data_out_19[1];
+            green <= memory_data_out_19[5];
+            blue <= memory_data_out_19[9];
+          end else if (absolute_addr > 17407) begin
+            red <= memory_data_out_18[1];
+            green <= memory_data_out_18[5];
+            blue <= memory_data_out_18[9];
+          end else if (absolute_addr > 16383) begin
+            red <= memory_data_out_17[1];
+            green <= memory_data_out_17[5];
+            blue <= memory_data_out_17[9];
+          end else if (absolute_addr > 15359) begin
+            red <= memory_data_out_16[1];
+            green <= memory_data_out_16[5];
+            blue <= memory_data_out_16[9];
+          end else if (absolute_addr > 14335) begin
+            red <= memory_data_out_15[1];
+            green <= memory_data_out_15[5];
+            blue <= memory_data_out_15[9];
+          end else if (absolute_addr > 13311) begin
+            red <= memory_data_out_14[1];
+            green <= memory_data_out_14[5];
+            blue <= memory_data_out_14[9];
+          end else if (absolute_addr > 12287) begin
+            red <= memory_data_out_13[1];
+            green <= memory_data_out_13[5];
+            blue <= memory_data_out_13[9];
+          end else if (absolute_addr > 11263) begin
+            red <= memory_data_out_12[1];
+            green <= memory_data_out_12[5];
+            blue <= memory_data_out_12[9];
+          end else if (absolute_addr > 10239) begin
+            red <= memory_data_out_11[1];
+            green <= memory_data_out_11[5];
+            blue <= memory_data_out_11[9];
+          end else if (absolute_addr > 9215) begin
+            red <= memory_data_out_10[1];
+            green <= memory_data_out_10[5];
+            blue <= memory_data_out_10[9];
+          end else if (absolute_addr > 8191) begin
+            red <= memory_data_out_9[1];
+            green <= memory_data_out_9[5];
+            blue <= memory_data_out_9[9];
+          end else if (absolute_addr > 7167) begin
+            red <= memory_data_out_8[1];
+            green <= memory_data_out_8[5];
+            blue <= memory_data_out_8[9];
+          end else if (absolute_addr > 6143) begin
+            red <= memory_data_out_7[1];
+            green <= memory_data_out_7[5];
+            blue <= memory_data_out_7[9];
+          end else if (absolute_addr > 5119) begin
+            red <= memory_data_out_6[1];
+            green <= memory_data_out_6[5];
+            blue <= memory_data_out_6[9];
+          end else if (absolute_addr > 4095) begin
+            red <= memory_data_out_5[1];
+            green <= memory_data_out_5[5];
+            blue <= memory_data_out_5[9];
+          end else if (absolute_addr > 3071) begin
+            red <= memory_data_out_4[1];
+            green <= memory_data_out_4[5];
+            blue <= memory_data_out_4[9];
+          end else if (absolute_addr > 2047) begin
+            red <= memory_data_out_3[1];
+            green <= memory_data_out_3[5];
+            blue <= memory_data_out_3[9];
+          end else if (absolute_addr > 1023) begin
+            red <= memory_data_out_2[1];
+            green <= memory_data_out_2[5];
+            blue <= memory_data_out_2[9];
+          end else begin
+            red <= memory_data_out_1[1];
+            green <= memory_data_out_1[5];
+            blue <= memory_data_out_1[9];
+          end
+        end
 
-      if (v_counter == 628) // 628
-      begin
-        v_counter <= 0;
-      end
+        // Increment / reset counters.
+        h_counter <= h_counter + 1'b1;
 
-      display <= 0;
+        if (h_counter == 264) // 264
+        begin
+          h_counter <= 0;
+          v_counter <= v_counter + 1'b1;
+        end
 
+        if (v_counter == 628) // 628
+        begin
+          v_counter <= 0;
+        end
+
+        display <= 0;
       end else begin
         display <= 1;
       end
-
-      // absolute_addr <= h_counter + ((v_counter / 4) * 200);
     end
 
     reg interrupt_active;
 
     // Load pixel data into memory.
-    always @(negedge clk_10mhz) begin
+    always @(negedge clk_20mhz) begin
       absolute_addr <= h_counter + ((v_counter / 4) * 200);
+
       write_en1 <= 0;
       write_en2 <= 0;
       write_en3 <= 0;
@@ -530,10 +518,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en1)
     );
 
@@ -562,10 +550,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en2)
     );
 
@@ -594,10 +582,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en3)
     );
 
@@ -626,10 +614,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en4)
     );
 
@@ -658,10 +646,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en5)
     );
 
@@ -690,10 +678,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en6)
     );
 
@@ -722,10 +710,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en7)
     );
 
@@ -754,10 +742,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en8)
     );
 
@@ -786,10 +774,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en9)
     );
 
@@ -818,10 +806,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en10)
     );
 
@@ -850,10 +838,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en11)
     );
 
@@ -882,10 +870,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en12)
     );
 
@@ -914,10 +902,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en13)
     );
 
@@ -946,10 +934,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en14)
     );
 
@@ -978,10 +966,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en15)
     );
 
@@ -1010,10 +998,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en16)
     );
 
@@ -1042,10 +1030,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en17)
     );
 
@@ -1074,10 +1062,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en18)
     );
 
@@ -1106,10 +1094,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en19)
     );
 
@@ -1138,10 +1126,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en20)
     );
 
@@ -1170,10 +1158,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en21)
     );
 
@@ -1202,10 +1190,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en22)
     );
 
@@ -1234,10 +1222,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en23)
     );
 
@@ -1266,10 +1254,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en24)
     );
 
@@ -1298,10 +1286,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en25)
     );
 
@@ -1330,10 +1318,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en26)
     );
 
@@ -1362,10 +1350,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en27)
     );
 
@@ -1394,10 +1382,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en28)
     );
 
@@ -1426,10 +1414,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en29)
     );
 
@@ -1458,10 +1446,10 @@ module top (
       .WADDR(waddr),
       .WDATA(memory_data_in),
       .RCLKE(1'b1),
-      .RCLK(clk_10mhz),
+      .RCLK(clk_20mhz),
       .RE(1'b1),
       .WCLKE(1'b1),
-      .WCLK(clk_10mhz),
+      .WCLK(clk_20mhz),
       .WE(write_en30)
     );
 
