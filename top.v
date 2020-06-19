@@ -107,7 +107,8 @@ module top (
     // BRAM
     reg [15:0] memory_data_in;  // bits: 13, 9, 5, 1
     reg [14:0] w_absolute_addr;
-    reg [10:0] waddr;
+    wire [10:0] waddr;
+    assign waddr = {1'b0, w_absolute_addr[9:0]};
 
     reg [14:0] absolute_addr;
     wire [10:0] raddr;
@@ -383,8 +384,10 @@ module top (
       absolute_addr <= h_counter + ((v_counter / 4) * 200);
     end
 
+    reg interrupt_active;
+
     // Load pixel data into memory.
-    always @(interrupt) begin
+    always @(negedge clk_10mhz) begin
       write_en1 <= 0;
       write_en2 <= 0;
       write_en3 <= 0;
@@ -415,71 +418,74 @@ module top (
       write_en28 <= 0;
       write_en29 <= 0;
       write_en30 <= 0;
+      if (interrupt && !interrupt_active) begin
+        interrupt_active = 1;
 
-      w_absolute_addr <= {a14, a13, a12, a11, a10, a9, a8, a7, a6, a5, a4, a3, a2, a1, a0};
-      waddr = {1'b0, w_absolute_addr[9:0]};
-      memory_data_in <= {b_in, g_in, r_in};
+        memory_data_in = {1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,b_in,1'b1,1'b1,1'b1,g_in,1'b1,1'b1,1'b1,r_in,1'b1};
+        w_absolute_addr = {a14, a13, a12, a11, a10, a9, a8, a7, a6, a5, a4, a3, a2, a1, a0};
 
-      if (w_absolute_addr > 29695) begin
-        write_en30 <= 1;
-      end else if (w_absolute_addr > 28671) begin
-        write_en29 <= 1;
-      end else if (w_absolute_addr > 27647) begin
-        write_en28 <= 1;
-      end else if (w_absolute_addr > 26623) begin
-        write_en27 <= 1;
-      end else if (w_absolute_addr > 25599) begin
-        write_en26 <= 1;
-      end else if (w_absolute_addr > 24575) begin
-        write_en25 <= 1;
-      end else if (w_absolute_addr > 23551) begin
-        write_en24 <= 1;
-      end else if (w_absolute_addr > 22527) begin
-        write_en23 <= 1;
-      end else if (w_absolute_addr > 21503) begin
-        write_en22 <= 1;
-      end else if (w_absolute_addr > 20479) begin
-        write_en21 <= 1;
-      end else if (w_absolute_addr > 19455) begin
-        write_en20 <= 1;
-      end else if (w_absolute_addr > 18431) begin
-        write_en19 <= 1;
-      end else if (w_absolute_addr > 17407) begin
-        write_en18 <= 1;
-      end else if (w_absolute_addr > 16383) begin
-        write_en17 <= 1;
-      end else if (w_absolute_addr > 15359) begin
-        write_en16 <= 1;
-      end else if (w_absolute_addr > 14335) begin
-        write_en15 <= 1;
-      end else if (w_absolute_addr > 13311) begin
-        write_en14 <= 1;
-      end else if (w_absolute_addr > 12287) begin
-        write_en13 <= 1;
-      end else if (w_absolute_addr > 11263) begin
-        write_en12 <= 1;
-      end else if (w_absolute_addr > 10239) begin
-        write_en11 <= 1;
-      end else if (w_absolute_addr > 9215) begin
-        write_en10 <= 1;
-      end else if (w_absolute_addr > 8191) begin
-        write_en9 <= 1;
-      end else if (w_absolute_addr > 7167) begin
-        write_en8 <= 1;
-      end else if (w_absolute_addr > 6143) begin
-        write_en7 <= 1;
-      end else if (w_absolute_addr > 5119) begin
-        write_en6 <= 1;
-      end else if (w_absolute_addr > 4095) begin
-        write_en5 <= 1;
-      end else if (w_absolute_addr > 3071) begin
-        write_en4 <= 1;
-      end else if (w_absolute_addr > 2046) begin
-        write_en3 <= 1;
-      end else if (w_absolute_addr > 1023) begin
-        write_en2 <= 1;
-      end else begin
-        write_en1 <= 1;
+        if (w_absolute_addr > 29695) begin
+          write_en30 <= 1;
+        end else if (w_absolute_addr > 28671) begin
+          write_en29 <= 1;
+        end else if (w_absolute_addr > 27647) begin
+          write_en28 <= 1;
+        end else if (w_absolute_addr > 26623) begin
+          write_en27 <= 1;
+        end else if (w_absolute_addr > 25599) begin
+          write_en26 <= 1;
+        end else if (w_absolute_addr > 24575) begin
+          write_en25 <= 1;
+        end else if (w_absolute_addr > 23551) begin
+          write_en24 <= 1;
+        end else if (w_absolute_addr > 22527) begin
+          write_en23 <= 1;
+        end else if (w_absolute_addr > 21503) begin
+          write_en22 <= 1;
+        end else if (w_absolute_addr > 20479) begin
+          write_en21 <= 1;
+        end else if (w_absolute_addr > 19455) begin
+          write_en20 <= 1;
+        end else if (w_absolute_addr > 18431) begin
+          write_en19 <= 1;
+        end else if (w_absolute_addr > 17407) begin
+          write_en18 <= 1;
+        end else if (w_absolute_addr > 16383) begin
+          write_en17 <= 1;
+        end else if (w_absolute_addr > 15359) begin
+          write_en16 <= 1;
+        end else if (w_absolute_addr > 14335) begin
+          write_en15 <= 1;
+        end else if (w_absolute_addr > 13311) begin
+          write_en14 <= 1;
+        end else if (w_absolute_addr > 12287) begin
+          write_en13 <= 1;
+        end else if (w_absolute_addr > 11263) begin
+          write_en12 <= 1;
+        end else if (w_absolute_addr > 10239) begin
+          write_en11 <= 1;
+        end else if (w_absolute_addr > 9215) begin
+          write_en10 <= 1;
+        end else if (w_absolute_addr > 8191) begin
+          write_en9 <= 1;
+        end else if (w_absolute_addr > 7167) begin
+          write_en8 <= 1;
+        end else if (w_absolute_addr > 6143) begin
+          write_en7 <= 1;
+        end else if (w_absolute_addr > 5119) begin
+          write_en6 <= 1;
+        end else if (w_absolute_addr > 4095) begin
+          write_en5 <= 1;
+        end else if (w_absolute_addr > 3071) begin
+          write_en4 <= 1;
+        end else if (w_absolute_addr > 2046) begin
+          write_en3 <= 1;
+        end else if (w_absolute_addr > 1023) begin
+          write_en2 <= 1;
+        end else begin
+          write_en1 <= 1;
+        end
+        interrupt_active = 0;
       end
     end
 
