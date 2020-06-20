@@ -22,6 +22,8 @@ Next, set the color value on the data bus:
 
 A `1` is full on, and `0` is full off.  A total of 8 colors can be generated.  With address and data choices set, send a high pulse to the interrupt.  This writes the pixel data to BRAM and the VGA generator will display it on the next frame (60 frames / second).
 
+Voltage dividing resistors are required on the RGB lines to bring the voltage down to 0.7V.  357 ohms from the TinyFPGA signals, and 100 ohms to ground.
+
 To demonstrate the functionality, I have written some example [Arduino code available here](https://github.com/nickbild/fpga_vga/blob/master/arduino_example/arduino_example.ino).  I also have an example for interfacing from a [Raspberry Pi 3 B+](https://github.com/nickbild/fpga_vga/blob/master/update_memory.py).
 
 ## Media
