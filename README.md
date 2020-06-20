@@ -28,11 +28,11 @@ To demonstrate the functionality, I have written some example [Arduino code avai
 
 MiniVGA being driven by an Arduino Nano 33 IoT:
 
-![MiniVGA](https://raw.githubusercontent.com/nickbild/fpga_vga/master/media/minivga_sm.png)
+![MiniVGA](https://raw.githubusercontent.com/nickbild/fpga_vga/master/media/minivga_sm.jpg)
 
 Prince of Persia title screen:
 
-![Prince of Persia](https://raw.githubusercontent.com/nickbild/fpga_vga/master/media/princeofpersia_sm.png)
+![Prince of Persia](https://raw.githubusercontent.com/nickbild/fpga_vga/master/media/princeofpersia_sm.jpg)
 
 ## Bill of Materials
 
