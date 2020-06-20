@@ -10,7 +10,7 @@ A TinyFPGA BX has been [programmed](https://github.com/nickbild/fpga_vga/blob/ma
 
 The interface consists of a 15 bit address bus, 3 bit data bus, and an interrupt signal.  To draw a color to a pixel, set the desired address on the address bus (top left pixel = 0; bottom right pixel = 29,999).  
 
-![Pixel Numbering](https://raw.githubusercontent.com/nickbild/fpga_vga/master/media/pixel_numbering.png)
+![Pixel Numbering](https://raw.githubusercontent.com/nickbild/fpga_vga/master/media/pixel_numbering2.png)
 
 Next, set the color value on the data bus:
 
