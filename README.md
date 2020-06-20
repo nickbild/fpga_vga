@@ -8,7 +8,11 @@ Having recently built the [Vectron VGA](https://github.com/nickbild/vectron_vga)
 
 A TinyFPGA BX has been [programmed](https://github.com/nickbild/fpga_vga/blob/master/top.v) to generate an 800x600 @ 60Hz VGA signal.  Each pixel is repeated 4 times horizontally and vertically to yield a resolution of 200x150 pixels.  Screen data is continually refreshed based on the data stored in a section of the BRAM dedicated to this purpose.
 
-The interface consists of a 15 bit address bus, 3 bit data bus, and an interrupt signal.  To draw a color to a pixel, set the desired address on the address bus (top left pixel = 0; bottom right pixel = 29,999).  Next, set the color value on the data bus:
+The interface consists of a 15 bit address bus, 3 bit data bus, and an interrupt signal.  To draw a color to a pixel, set the desired address on the address bus (top left pixel = 0; bottom right pixel = 29,999).  
+
+[Pixel Numbering](https://github.com/nickbild/fpga_vga/blob/master/update_memory.py)
+
+Next, set the color value on the data bus:
 
 | bit 2 | bit 1 | bit 0 |
 | ----  | ----  | ----  |
