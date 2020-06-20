@@ -16,7 +16,7 @@ The interface consists of a 15 bit address bus, 3 bit data bus, and an interrupt
 
 A `1` is full on, and `0` is full off.  A total of 8 colors can be generated.  With address and data choices set, send a high pulse to the interrupt.  This writes the pixel data to BRAM and the VGA generator will display it on the next frame (60 frames / second).
 
-To demonstrate the functionality, I have written some example [Arduino code available here](https://github.com/nickbild/fpga_vga/blob/master/arduino_example/arduino_example.ino).  I have also controlled it with a [Raspberry Pi 3 B+](https://github.com/nickbild/fpga_vga/blob/master/update_memory.py).
+To demonstrate the functionality, I have written some example [Arduino code available here](https://github.com/nickbild/fpga_vga/blob/master/arduino_example/arduino_example.ino).  I also have an example for interfacing from a [Raspberry Pi 3 B+](https://github.com/nickbild/fpga_vga/blob/master/update_memory.py).
 
 ## Media
 
